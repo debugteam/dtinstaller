@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+# # # make sure you got the right rights to make changes to apache config and to start services or install
+# programs like dnsmasq if you choose to do so
+
+if [ "$(whoami)" != "root" ]; then
+  echo "Must be run as root - this script should be able to make changes to (apache2) configuration files or at least a2ensite the new vhosts, restart services or install stuff if you choose to - you will be asked prior installation! Usage: sudo dtinstaller";
+  exit 1;
+fi
+
+# # # load configuration
+source "/etc/dtinstaller/config.sh"
+
+# # # load system functions lib
+source "/usr/share/dtinstaller/lib/system/deletedirectory.sh"
+source "/usr/share/dtinstaller/lib/system/getsudouser.sh"
+source "/usr/share/dtinstaller/lib/system/getapacherunuser.sh"
+source "/usr/share/dtinstaller/lib/system/getapacherungroup.sh"
+source "/usr/share/dtinstaller/lib/system/gethttpdroot.sh"
+source "/usr/share/dtinstaller/lib/system/dnsmasqhelper.sh"
+source "/usr/share/dtinstaller/lib/system/checkservice.sh"
+source "/usr/share/dtinstaller/lib/system/checkimagemagic.sh"
+source "/usr/share/dtinstaller/lib/system/checkgit.sh"
+source "/usr/share/dtinstaller/lib/system/checkcomposer.sh"
+source "/usr/share/dtinstaller/lib/system/prepareenvironment.sh"
+source "/usr/share/dtinstaller/lib/system/checkenvironment.sh"
+source "/usr/share/dtinstaller/lib/system/checkservices.sh"
+source "/usr/share/dtinstaller/lib/system/checksystem.sh"
+source "/usr/share/dtinstaller/lib/system/createproject.sh"
+
+# # # load some libs for standard output behavior
+source "/usr/share/dtinstaller/lib/framework/message.sh"
+
+# # # load the program libs
+source "/usr/share/dtinstaller/lib/programs/zend/zend.sh"
+source "/usr/share/dtinstaller/lib/programs/symfony/symfony.sh"
+source "/usr/share/dtinstaller/lib/programs/mapbender3/mapbender3.sh"
+source "/usr/share/dtinstaller/lib/programs/ilias/ilias.sh"
+
+programselect() {
+
+  clear
+  message "   What's your plan, sir?  " 3 0
+  echo ""
+  echo "1) create an empty virtual host"
+  echo "2) create a new symfony application"
+  echo "3) create a new zend framework application"
+  echo "4) create a new mapbender3 application"
+  echo "5) create a new ilias application"
+  echo "6) exit"
+  echo ""
+  echo -e "Please choose an option: \c "
+  read option
+  case $option in
+      1) vhost;;
+      2) symfony;;
+      3) zend;;
+      4) mapbender3;;
+      5) ilias;;
+      6) exit;;
+  esac
+
+}
+
+main() {
+
+  clear
+  message "   Run the Gauntlet, Seargant!  " 3 0
+  echo ""
+  echo "1) create new project"
+  echo "2) delete project"
+  echo "3) install dnsmasq to enable http://{project}.dev"
+  echo "4) check environment"
+  echo "5) check services"
+  echo "6) exit"
+  echo ""
+  echo -e "Please choose an option: \c "
+  read option
+  case $option in
+      1) programselect;;
+      2) deletedirectory $apacheroot/$projectroot;;
+      3) dnsmasqhelper;;
+      4) checkenvironment;;
+      5) checkservices;;
+      6) exit;;
+  esac
+
+}
+main

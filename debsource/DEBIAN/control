@@ -1,0 +1,14 @@
+Package: dtinstaller
+Version: 1.0
+Architecture: all
+Installed-Size: 39301
+Maintainer: Jochen Schultz <jschultz@php.net>
+Provides: dtinstaller
+Depends: php
+Recommends: apache2, git
+Section: devel
+Priority: extra
+Homepage: http://www.debugteam.com/
+Description: Install script
+ helps to create a development environment to evaluate
+ supported programs like symfony or zend framework, mapbender3 or ilias
