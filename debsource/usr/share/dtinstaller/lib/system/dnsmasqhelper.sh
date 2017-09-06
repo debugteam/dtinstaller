@@ -6,7 +6,7 @@ dnsmasqhelper() {
   echo ""
   echo -e "Do you want to enable http://{projectname}.dev? Please write the word 'yes' : \c"
   read confirm
-  if [ $confirm = "yes" ]; then
+  if [[ $confirm = "yes" ]]; then
     apt-get install dnsmasq
     sed -i -e 's/dns=dnsmasq/\#dns=dnsmasq/g' /etc/NetworkManager/NetworkManager.conf
     sed -i -e 's/\#\#dns=dnsmasq/\#dns=dnsmasq/g' /etc/NetworkManager/NetworkManager.conf

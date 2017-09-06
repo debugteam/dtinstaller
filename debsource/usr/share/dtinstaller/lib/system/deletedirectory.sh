@@ -12,11 +12,11 @@ deletedirectory() {
 
   local directory dirs
   directory=${1}
-  
+  cd ${directory}
   clear
   message "   Delete a project!  " 3 0
   echo ""
-  listing=`ls -l $directory | egrep '^d' | awk '{print $9}'`
+  listing=`ls -l ${directory} | egrep '^d' | awk '{print $9}'`
   echo "0) : [return to menu]"
   echo ""
   counter=1
@@ -35,10 +35,13 @@ deletedirectory() {
       main
     fi
     if [ ${field[pindex]} ]; then
-      echo -e "delete $apacheroot/$projectroot/${field[pindex]}? Please write the word 'yes' : \c"
+      echo -e "delete ${directory}/${field[pindex]}? Please write the word 'yes' : \c"
       read confirm
-      if [ $confirm = "yes" ]; then
-        rm -rf $apacheroot/$projectroot/${field[pindex]}
+      if [[ $confirm = "yes" ]]; then
+        a2dissite ${field[pindex]}
+        unlink /etc/apache2/sites-available/${field[pindex]}.conf
+        rm -rf ${directory}/${field[pindex]}
+        service apache2 reload
         message "  ✔ Project ${field[pindex]} deleted" 1 0
         read -n 1 -s -r -p "Press any key to continue"
       fi
@@ -46,6 +49,7 @@ deletedirectory() {
       deletedirectory $directory
     fi
     main
+    exit
   else
     clear
     message "  ❌ there is no project to delete!" 1 0

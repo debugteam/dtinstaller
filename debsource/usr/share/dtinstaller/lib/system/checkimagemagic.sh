@@ -11,7 +11,7 @@ checkimagemagic() {
 
   isinstalled=$(convert -version | grep -oP 'Version(?=)')
   
-  if [ $isinstalled = 'Version' ]; then
+  if [[ $isinstalled = 'Version' ]]; then
     version=$(convert -version | grep -oP 'Version.*' | grep -oP 'ImageMagic.+' | grep -oP ' .*?(?= )' | head -1)
     message "  ✔ ImageMagic Version:$version is installed" 2 3
   else

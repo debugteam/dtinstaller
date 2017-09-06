@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
 
-# === === ### lib to install symfony framework ### === === #
+# === === ### function to create a new empy virtual host under apache2 ### === === #
 
 # Author Jochen Schultz <jschultz@php.net>
 
-# usage: symfony
+# usage:  createvhost /var/www/projects
 
-symfony_checkrequirements() {
-  message "   checking requirements!  " 3 0
-  checkgit
-  checkcomposer
-  read -n 1 -s -r -p "Press any key to continue"
-}
-
-symfony_create_vhost_apache_entry() {
+create_vhost_apache_entry() {
     projectdirectory=${1}
     projectname=${2}
     cat > ${projectdirectory}/${projectname}/conf/apache2.conf <<EOL
@@ -31,38 +24,32 @@ EOL
 
 }
 
-symfony_create_vhost_directory_structure() {
+
+create_vhost_directory_structure() {
 
     local projectdirectory
     projectdirectory=${1}
     projectname=${2}
-    sudouser=$(getsudouser)
+
+    mkdir -p ${projectdirectory}/${projectname}/{conf,log,application/web}
     apacherunuser=$(getapacherunuser)
     apacherungroup=$(getapacherungroup)
-    # root creates a directory
-    mkdir -p ${projectdirectory}/${projectname}/{conf,log,application}
-    # sudo user takes it over application folder
-    chown -R ${sudouser}:${sudouser} ${projectdirectory}/${projectname}/application
-    apppath=${projectdirectory}/${projectname}/application
-    cd ${apppath}
-    # sudouser creates project
-    sudo -u${sudouser} composer create-project symfony/framework-standard-edition ./
-    # apacheuser becomes new owner of applicationfolder
-    chown -R ${apacherunuser}:${apacherungroup} ${projectdirectory}/${projectname}/application
-    symfony_create_vhost_apache_entry "${projectdirectory}" "${projectname}"
-    message "  ✔ Symfony project created" 2 0
+    chown -R ${apacherunuser}:${apacherungroup} ${projectdirectory}/${projectname}
+
+    create_vhost_apache_entry "${projectdirectory}" "${pname}"
+
+    cd ${projectdirectory}/${projectname}
+    message "  ✔ Project created" 2 0
     read -n 1 -s -r -p "Press any key to continue"
     main
-
 }
 
-symfony() {
+createvhost() {
 
     local projectdirectory dirs
     projectdirectory=${1}
-    symfony_checkrequirements
     clear
-    message "   create a Symfony project!  " 3 0
+    message "   create a project!  " 3 0
     echo ""
     echo -e "Projectname (leave empty to cancel): \c"
     read pname
@@ -72,10 +59,10 @@ symfony() {
         if [ -d ${projectdirectory}/${pname} ]; then
             message "  ❌ this project already exist!" 1 0
             read -n 1 -s -r -p "Press any key to continue"
-            symfony "${projectdirectory}"
+            createvhost "${projectdirectory}"
             exit
         else
-            symfony_create_vhost_directory_structure "${projectdirectory}" "${pname}"
+            create_vhost_directory_structure "${projectdirectory}" "${pname}"
         fi
     fi
 
